@@ -1,0 +1,18 @@
+php_value max_input_vars 1000000
+php_value memory_limit 128M
+php_value upload_max_filesize 32M
+php_value post_max_size 32M
+php_value max_execution_time 300
+php_value max_input_time 300
+php_value short_open_tag off
+php_value realpath_cache_size 5242880
+php_value expose_php Off
+php_value date.timezone Asia/Taipei
+
+php_value opcache.enable 1
+php_value opcache.enable_cli 1
+php_value opcache.memory_consumption 128
+php_value opcache.interned_strings_buffer 8
+php_value opcache.max_accelerated_files 4000
+php_value opcache.revalidate_freq 60
+php_value opcache.fast_shutdown 1

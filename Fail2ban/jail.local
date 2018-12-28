@@ -1,0 +1,27 @@
+[DEFAULT]
+# 以空格分隔的列表，可以是 IP 地址、CIDR 前綴或者 DNS 主機名
+# 用於指定哪些地址可以忽略 fail2ban 防御
+ignoreip = 127.0.0.1 172.31.0.0/24 10.10.0.0/24 192.168.0.0/24
+ 
+# 客戶端主機被禁止的時長（秒）
+bantime = 86400
+ 
+# 客戶端主機被禁止前允許失敗的次數 
+maxretry = 5
+ 
+# 查找失敗次數的時長（秒）
+findtime = 600
+ 
+mta = sendmail
+ 
+[ssh-iptables]
+enabled = true
+filter = sshd
+action = iptables[name=SSH, port=ssh, protocol=tcp]
+sendmail-whois[name=SSH, dest=your@email.com, sender=fail2ban@email.com]
+# Debian 系的發行版 
+logpath = /var/log/auth.log
+# Red Hat 系的發行版
+logpath = /var/log/secure
+# ssh 服務的最大嘗試次數 
+maxretry = 3
