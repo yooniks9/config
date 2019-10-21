@@ -1,0 +1,8 @@
+Host *
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+
+Host 192.168.56.2
+User ubuntu
+Hostname bionic
+IdentityFile /Users/USERNAME/.ssh/id_rsa
