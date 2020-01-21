@@ -1,5 +1,5 @@
   
-name: CI
+name: Laravel Continue Integration
 
 on:
   push:
@@ -12,28 +12,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Clone the repo
+      uses: actions/checkout@v1
       
-    - name: Run a multi-line script
+    - name: Composer install
+      uses: docker://composer:1.9.1
+      with:
+        args: install
+
+    - name: PHPUnit testing
+      uses: docker://php:7.3
+      with:
+        args: |
+          php vendor/bin/phpunit
+     
+    - name: node install
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - run: npm install
+    - run: npm run production
+    
+    - name: Change file permission
       run: |
-        groups runner
         sudo find . -type f -exec chmod 664 {} + 
         sudo find . -type d -exec chmod 775 {} + 
         sudo chown -R www-data:www-data .
         ls -alh
         
-    - name: Deploy to server
+    - name: Deploy to server without git & .env
       id: deploy
       uses: Pendect/action-rsyncer@v1.1.0
       env:
-        DEPLOY_KEY: ${{secrets.BS_PRI_KEY}}
+        DEPLOY_KEY: ${{secrets.SSH_PRIVATE_KEY}}
       with:
-        flags: '-avz --exclude=".git*"'
+        flags: '-avz --exclude=".git*" --exclude .env'
         options: ''
-        ssh_options: ''
+        ssh_options: '-p ${{secrets.SSH_PORT}}'
         src: '.'
-        dest: '${{secrets.BS_USER}}@${{secrets.BS_SERVER}}:/var/www/github_action/'
-        
-    - name: Display status from deploy
-      run: echo "${{ steps.deploy.outputs.status }}"  
+        dest: '${{secrets.SSH_USER}}@${{secrets.SSH_SERVER}}:/var/www/github_action/'
       
