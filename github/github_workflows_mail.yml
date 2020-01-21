@@ -1,0 +1,39 @@
+  
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      
+    - name: Run a multi-line script
+      run: |
+        groups runner
+        sudo find . -type f -exec chmod 664 {} + 
+        sudo find . -type d -exec chmod 775 {} + 
+        sudo chown -R www-data:www-data .
+        ls -alh
+        
+    - name: Deploy to server
+      id: deploy
+      uses: Pendect/action-rsyncer@v1.1.0
+      env:
+        DEPLOY_KEY: ${{secrets.BS_PRI_KEY}}
+      with:
+        flags: '-avz --exclude=".git*"'
+        options: ''
+        ssh_options: ''
+        src: '.'
+        dest: '${{secrets.BS_USER}}@${{secrets.BS_SERVER}}:/var/www/github_action/'
+        
+    - name: Display status from deploy
+      run: echo "${{ steps.deploy.outputs.status }}"  
+      
